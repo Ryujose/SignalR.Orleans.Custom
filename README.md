@@ -46,7 +46,7 @@ Paket:
 > \# paket add SignalR.Orleans
 
 ---
-# Version 7.0.0 documentation
+# Version 9.0.0 documentation
 > Scroll down to see documentation for earlier versions.
 
 Here is a complete starter example featuring cohosted aspnetcore app with SignalR and Orleans.
@@ -73,7 +73,7 @@ var app = builder.Build();
 app.MapHub<MyHub>("/myhub");
 await app.RunAsync();
 
-// A SignalR Hub. https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-7.0
+// A SignalR Hub. https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-9.0
 class MyHub : Hub
 {
 }
@@ -177,7 +177,7 @@ var app = builder.Build();
 app.MapHub<MyHub>("/myhub");
 await app.RunAsync();
 
-// A SignalR Hub. https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-7.0
+// A SignalR Hub. https://learn.microsoft.com/en-us/aspnet/core/signalr/hubs?view=aspnetcore-9.0
 class MyHub : Hub
 {
 }
