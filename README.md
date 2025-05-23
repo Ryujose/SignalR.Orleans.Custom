@@ -31,7 +31,7 @@ TODO: These two abilities should be provided independently of each other. Unfort
 
 Installation is performed via [NuGet.](https://www.nuget.org/packages/SignalR.Orleans/)
 
-Packages with version `7.x.x` are compatible with Orleans `v7.x.x` and above. If you're still using an earlier version of Orleans, you will need to use earlier versions of the package.
+Packages with version `9.x.x` are compatible with Orleans `v9.x.x` and above. If you're still using an earlier version of Orleans, you will need to use earlier versions of the package.
 
 Package Manager:
 
@@ -183,7 +183,7 @@ class MyHub : Hub
 }
 ```
 
-This is the end of documentation for versions >= 7.0.0. Below is older documenation for previous versions.
+This is the end of documentation for versions >= 9.0.0. Below is older documenation for previous versions.
 
 ---
 # Earlier version documentation
