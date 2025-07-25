@@ -8,6 +8,7 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
+    <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
   </PropertyGroup>
