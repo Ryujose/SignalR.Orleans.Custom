@@ -8,8 +8,8 @@ public interface IChatHub
 
 public class ChatHub : Hub, IChatHub
 {
-    private readonly ILogger<ChatHub> _logger;
     private readonly IClusterClient _clusterClient;
+    private readonly ILogger<ChatHub> _logger;
 
     public ChatHub(ILogger<ChatHub> logger, IClusterClient clusterClient)
     {
@@ -19,7 +19,8 @@ public class ChatHub : Hub, IChatHub
 
     public async Task Send(string name, string message)
     {
-        _logger.LogInformation($"{nameof(Send)} called. ConnectionId:{Context.ConnectionId}, Name:{name}, Message:{message}");
+        _logger.LogInformation(
+            $"{nameof(Send)} called. ConnectionId:{Context.ConnectionId}, Name:{name}, Message:{message}");
 
         var userNotificationGrain = _clusterClient.GetGrain<IUserNotificationGrain>(Guid.Empty.ToString());
         await userNotificationGrain.SendMessageAsync(name, message);

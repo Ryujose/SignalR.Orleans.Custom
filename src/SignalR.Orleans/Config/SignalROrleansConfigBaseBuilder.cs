@@ -4,4 +4,3 @@ public class SignalROrleansConfigBaseBuilder
 {
     public bool UseFireAndForgetDelivery { get; set; }
 }
-

@@ -1,4 +1,3 @@
-using Orleans.Runtime;
 using SignalR.Orleans.Core;
 
 namespace Silo;
@@ -6,12 +5,12 @@ namespace Silo;
 public class UserNotificationGrain : IGrainBase, IUserNotificationGrain
 {
     private const string BroadcastMessage = "BroadcastMessage";
-    private readonly ILogger<UserNotificationGrain> _logger;
     private readonly IGrainFactory _grainFactory;
+    private readonly ILogger<UserNotificationGrain> _logger;
     private HubContext<ChatHub> _hubContext = default!;
 
     public UserNotificationGrain(
-        ILogger<UserNotificationGrain> logger, 
+        ILogger<UserNotificationGrain> logger,
         IGrainContext context,
         IGrainFactory grainFactory)
     {
@@ -25,7 +24,7 @@ public class UserNotificationGrain : IGrainBase, IUserNotificationGrain
     public Task OnActivateAsync(CancellationToken ct)
     {
         _logger.LogInformation($"{nameof(OnActivateAsync)} called");
-        _hubContext = this._grainFactory.GetHub<ChatHub>();
+        _hubContext = _grainFactory.GetHub<ChatHub>();
         return Task.CompletedTask;
     }
 
@@ -33,7 +32,8 @@ public class UserNotificationGrain : IGrainBase, IUserNotificationGrain
     {
         var groupId = this.GetPrimaryKeyString();
         _logger.LogInformation($"{nameof(SendMessageAsync)} called. Name:{name}, Message:{message}, Key:{groupId}");
-        _logger.LogInformation($"Sending message to group: {groupId}. MethodName:{BroadcastMessage} Name:{name}, Message:{message}");
+        _logger.LogInformation(
+            $"Sending message to group: {groupId}. MethodName:{BroadcastMessage} Name:{name}, Message:{message}");
 
         await _hubContext.Group(groupId).Send(BroadcastMessage, name, message);
     }

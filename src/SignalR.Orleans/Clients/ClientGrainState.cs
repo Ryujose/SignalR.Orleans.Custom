@@ -8,6 +8,5 @@ internal sealed class ClientGrainState
 {
     private string DebuggerDisplay => $"ServerId: '{ServerId}'";
 
-    [Id(0)]
-    public Guid ServerId { get; set; }
+    [Id(0)] public Guid ServerId { get; set; }
 }

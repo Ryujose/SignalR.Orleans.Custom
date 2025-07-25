@@ -3,7 +3,7 @@ using SignalR.Orleans.Core;
 namespace SignalR.Orleans.Clients;
 
 /// <summary>
-/// A single connection
+///     A single connection
 /// </summary>
 public interface IClientGrain : IHubMessageInvoker, IGrainWithStringKey
 {

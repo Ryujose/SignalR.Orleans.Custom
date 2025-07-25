@@ -1,42 +1,42 @@
 ﻿// COPIED AND REFACTORED :: Signalr/src/common/DuplexPipe.cs
 // TODO: Since we're up a couple of SignalR versions now, this could have changed -- should revisit original implementation
 
-namespace System.IO.Pipelines
-{
-    public class DuplexPipe : IDuplexPipe
-    {
-        public DuplexPipe(PipeReader reader, PipeWriter writer)
-        {
-            Input = reader;
-            Output = writer;
-        }
+namespace System.IO.Pipelines;
 
-        public PipeReader Input { get; }
-        public PipeWriter Output { get; }
+public class DuplexPipe : IDuplexPipe
+{
+    public DuplexPipe(PipeReader reader, PipeWriter writer)
+    {
+        Input = reader;
+        Output = writer;
     }
 
-    public class DuplexPipePair
+    public PipeReader Input { get; }
+    public PipeWriter Output { get; }
+}
+
+public class DuplexPipePair
+{
+    public DuplexPipePair(IDuplexPipe transport, IDuplexPipe application)
     {
-        public IDuplexPipe Transport { get; }
-        public IDuplexPipe Application { get; }
+        Transport = transport;
+        Application = application;
+    }
 
-        public DuplexPipePair(IDuplexPipe transport, IDuplexPipe application)
-        {
-            Transport = transport;
-            Application = application;
-        }
+    public IDuplexPipe Transport { get; }
+    public IDuplexPipe Application { get; }
 
-        public static DuplexPipePair GetConnectionTransport(bool synchronousCallbacks)
-        {
-            var scheduler = synchronousCallbacks ? PipeScheduler.Inline : null;
-            var options = new PipeOptions(readerScheduler: scheduler, writerScheduler: scheduler, useSynchronizationContext: false);
-            var input = new Pipe(options);
-            var output = new Pipe(options);
+    public static DuplexPipePair GetConnectionTransport(bool synchronousCallbacks)
+    {
+        var scheduler = synchronousCallbacks ? PipeScheduler.Inline : null;
+        var options = new PipeOptions(readerScheduler: scheduler, writerScheduler: scheduler,
+            useSynchronizationContext: false);
+        var input = new Pipe(options);
+        var output = new Pipe(options);
 
-            var transportToApplication = new DuplexPipe(output.Reader, input.Writer);
-            var applicationToTransport = new DuplexPipe(input.Reader, output.Writer);
+        var transportToApplication = new DuplexPipe(output.Reader, input.Writer);
+        var applicationToTransport = new DuplexPipe(input.Reader, output.Writer);
 
-            return new DuplexPipePair(applicationToTransport, transportToApplication);
-        }
+        return new DuplexPipePair(applicationToTransport, transportToApplication);
     }
 }
