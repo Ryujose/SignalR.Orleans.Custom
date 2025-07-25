@@ -10,6 +10,6 @@ internal readonly record struct ClientKey
     public static ClientKey FromGrainPrimaryKey(string primaryKey)
     {
         var parts = primaryKey.Split(':', 2);
-        return new() { HubType = parts[0], ConnectionId = parts[1] };
+        return new ClientKey { HubType = parts[0], ConnectionId = parts[1] };
     }
 }

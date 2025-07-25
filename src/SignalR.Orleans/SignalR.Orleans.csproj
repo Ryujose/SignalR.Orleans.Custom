@@ -10,13 +10,14 @@
     <IncludeSource>true</IncludeSource>
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- see https://gist.github.com/tebeco/a6e0d9a3885a0a36e702795219bd4fe9 -->
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.Orleans.Server" Version="9.1.2" />
-    <PackageReference Include="Microsoft.Orleans.Streaming" Version="9.1.2" />
+    <FrameworkReference Include="Microsoft.AspNetCore.App"/>
+    <PackageReference Include="Microsoft.Orleans.Server" Version="9.1.2"/>
+    <PackageReference Include="Microsoft.Orleans.Streaming" Version="9.1.2"/>
   </ItemGroup>
 
   <ItemGroup>

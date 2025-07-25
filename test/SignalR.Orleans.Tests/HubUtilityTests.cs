@@ -1,36 +1,35 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Xunit;
 
-namespace SignalR.Orleans.Tests
+namespace SignalR.Orleans.Tests;
+
+public class HubUtilityTests
 {
-    public class HubUtilityTests
+    [Fact]
+    public void GivenAWeaklyTypedHub_WhenGetHubName_ThenReturnsHubName()
     {
-        [Fact]
-        public void GivenAWeaklyTypedHub_WhenGetHubName_ThenReturnsHubName()
-        {
-            var result = HubUtility.GetHubName<MyWeaklyTypedHub>();
+        var result = HubUtility.GetHubName<MyWeaklyTypedHub>();
 
-            Assert.Equal("MyWeaklyTypedHub", result);
-        }
+        Assert.Equal("MyWeaklyTypedHub", result);
+    }
 
-        [Fact]
-        public void GivenAStronglyTypedHub_WhenGetHubName_ThenReturnsHubName()
-        {
-            var result = HubUtility.GetHubName<MyStronglyTypedHub>();
+    [Fact]
+    public void GivenAStronglyTypedHub_WhenGetHubName_ThenReturnsHubName()
+    {
+        var result = HubUtility.GetHubName<MyStronglyTypedHub>();
 
-            Assert.Equal("MyStronglyTypedHub", result);
-        }
+        Assert.Equal("MyStronglyTypedHub", result);
+    }
 
-        private class MyWeaklyTypedHub : Hub
-        {
-        }
+    private class MyWeaklyTypedHub : Hub
+    {
+    }
 
-        private interface IHubClient
-        {
-        }
+    private interface IHubClient
+    {
+    }
 
-        private class MyStronglyTypedHub : Hub<IHubClient>
-        {
-        }
+    private class MyStronglyTypedHub : Hub<IHubClient>
+    {
     }
 }

@@ -7,18 +7,19 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Protocol;
 using Microsoft.Extensions.Logging.Abstractions;
 
-namespace SignalR.Orleans.Tests.AspnetSignalR
+namespace SignalR.Orleans.Tests.AspnetSignalR;
+
+public static class HubConnectionContextUtils
 {
-    public static class HubConnectionContextUtils
+    public static HubConnectionContext Create(ConnectionContext connection)
     {
-        public static HubConnectionContext Create(ConnectionContext connection)
-        {
-            var ctx = new HubConnectionContext(connection, new HubConnectionContextOptions() { ClientTimeoutInterval = TimeSpan.FromSeconds(15) }, NullLoggerFactory.Instance);
-            var protocolProp = ctx.GetType().GetProperty("Protocol", BindingFlags.Instance |
-                                                                     BindingFlags.NonPublic |
-                                                                     BindingFlags.Public)!;
-            protocolProp.SetValue(ctx, new JsonHubProtocol());
-            return ctx;
-        }
+        var ctx = new HubConnectionContext(connection,
+            new HubConnectionContextOptions { ClientTimeoutInterval = TimeSpan.FromSeconds(15) },
+            NullLoggerFactory.Instance);
+        var protocolProp = ctx.GetType().GetProperty("Protocol", BindingFlags.Instance |
+                                                                 BindingFlags.NonPublic |
+                                                                 BindingFlags.Public)!;
+        protocolProp.SetValue(ctx, new JsonHubProtocol());
+        return ctx;
     }
 }

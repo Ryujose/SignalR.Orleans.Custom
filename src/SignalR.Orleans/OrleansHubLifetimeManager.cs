@@ -1,7 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Protocol;
-using Orleans.Runtime;
+using Microsoft.Extensions.Logging;
 using Orleans.Streams;
 
 namespace SignalR.Orleans;
@@ -10,16 +9,16 @@ namespace SignalR.Orleans;
 public sealed class OrleansHubLifetimeManager<THub> : HubLifetimeManager<THub>, ILifecycleParticipant<ISiloLifecycle>,
     IDisposable where THub : Hub
 {
-    private readonly Guid _serverId;
-    private readonly ILogger _logger;
-    private readonly string _hubName;
     private readonly IClusterClient _clusterClient;
-    private readonly SemaphoreSlim _streamSetupLock = new(1);
     private readonly HubConnectionStore _connections = new();
+    private readonly string _hubName;
+    private readonly ILogger _logger;
+    private readonly Guid _serverId;
+    private readonly SemaphoreSlim _streamSetupLock = new(1);
+    private IAsyncStream<AllMessage> _allStream = default!;
+    private IAsyncStream<ClientMessage> _serverStream = default!;
 
     private IStreamProvider? _streamProvider;
-    private IAsyncStream<ClientMessage> _serverStream = default!;
-    private IAsyncStream<AllMessage> _allStream = default!;
     private Timer _timer = default!;
 
     public OrleansHubLifetimeManager(
@@ -36,8 +35,43 @@ public sealed class OrleansHubLifetimeManager<THub> : HubLifetimeManager<THub>, 
         _clusterClient = clusterClient;
     }
 
+    public void Dispose()
+    {
+        _timer?.Dispose();
+
+        var toUnsubscribe = new List<Task>();
+        if (_serverStream is not null)
+            toUnsubscribe.Add(Task.Factory.StartNew(async () =>
+            {
+                var subscriptions = await _serverStream.GetAllSubscriptionHandles();
+                var subs = new List<Task>();
+                subs.AddRange(subscriptions.Select(s => s.UnsubscribeAsync()));
+                await Task.WhenAll(subs);
+            }));
+
+        if (_allStream is not null)
+            toUnsubscribe.Add(Task.Factory.StartNew(async () =>
+            {
+                var subscriptions = await _allStream.GetAllSubscriptionHandles();
+                var subs = new List<Task>();
+                subs.AddRange(subscriptions.Select(s => s.UnsubscribeAsync()));
+                await Task.WhenAll(subs);
+            }));
+
+        var serverDirectoryGrain = _clusterClient.GetServerDirectoryGrain();
+        toUnsubscribe.Add(serverDirectoryGrain.Unregister(_serverId));
+
+        Task.WhenAll(toUnsubscribe.ToArray()).GetAwaiter().GetResult();
+    }
+
+    public void Participate(ISiloLifecycle lifecycle) =>
+        lifecycle.Subscribe(
+            nameof(OrleansHubLifetimeManager<THub>),
+            ServiceLifecycleStage.Active,
+            async cts => await Task.Run(EnsureStreamSetup, cts));
+
     private Task HeartbeatCheck()
-      => _clusterClient.GetServerDirectoryGrain().Heartbeat(_serverId);
+        => _clusterClient.GetServerDirectoryGrain().Heartbeat(_serverId);
 
     private async Task EnsureStreamSetup()
     {
@@ -250,46 +284,5 @@ public sealed class OrleansHubLifetimeManager<THub> : HubLifetimeManager<THub>, 
     {
         var client = _clusterClient.GetClientGrain(_hubName, connectionId);
         return client.Send(hubMessage);
-    }
-
-    public void Dispose()
-    {
-        _timer?.Dispose();
-
-        var toUnsubscribe = new List<Task>();
-        if (_serverStream is not null)
-        {
-            toUnsubscribe.Add(Task.Factory.StartNew(async () =>
-            {
-                var subscriptions = await _serverStream.GetAllSubscriptionHandles();
-                var subs = new List<Task>();
-                subs.AddRange(subscriptions.Select(s => s.UnsubscribeAsync()));
-                await Task.WhenAll(subs);
-            }));
-        }
-
-        if (_allStream is not null)
-        {
-            toUnsubscribe.Add(Task.Factory.StartNew(async () =>
-            {
-                var subscriptions = await _allStream.GetAllSubscriptionHandles();
-                var subs = new List<Task>();
-                subs.AddRange(subscriptions.Select(s => s.UnsubscribeAsync()));
-                await Task.WhenAll(subs);
-            }));
-        }
-
-        var serverDirectoryGrain = _clusterClient.GetServerDirectoryGrain();
-        toUnsubscribe.Add(serverDirectoryGrain.Unregister(_serverId));
-
-        Task.WhenAll(toUnsubscribe.ToArray()).GetAwaiter().GetResult();
-    }
-
-    public void Participate(ISiloLifecycle lifecycle)
-    {
-        lifecycle.Subscribe(
-           observerName: nameof(OrleansHubLifetimeManager<THub>),
-           stage: ServiceLifecycleStage.Active,
-           onStart: async cts => await Task.Run(EnsureStreamSetup, cts));
     }
 }

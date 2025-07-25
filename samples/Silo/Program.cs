@@ -1,6 +1,4 @@
-﻿
-using SignalR.Orleans;
-using Silo;
+﻿using Silo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +11,7 @@ builder.Host.UseOrleans(siloBuilder =>
 });
 
 builder.Services
-    .AddSignalR()  // Adds SignalR hubs to the web application
+    .AddSignalR() // Adds SignalR hubs to the web application
     .AddOrleans(); // Tells the SignalR hubs in the web application to use Orleans as a backplane (ability #1)
 
 var app = builder.Build();

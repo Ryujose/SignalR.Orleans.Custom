@@ -7,7 +7,7 @@ namespace Orleans;
 public static class GrainSignalRExtensions
 {
     /// <summary>
-    /// Invokes a method on the hub.
+    ///     Invokes a method on the hub.
     /// </summary>
     /// <param name="grain"></param>
     /// <param name="methodName">Target method name to invoke.</param>
@@ -19,8 +19,8 @@ public static class GrainSignalRExtensions
     }
 
     /// <summary>
-    /// Invokes a method on the hub and ignores the Task.
-    /// Note: This is a fire-and-forget method. The Task will not be awaited and any exception will be swallowed.
+    ///     Invokes a method on the hub and ignores the Task.
+    ///     Note: This is a fire-and-forget method. The Task will not be awaited and any exception will be swallowed.
     /// </summary>
     /// <param name="grain"></param>
     /// <param name="methodName">Target method name to invoke.</param>

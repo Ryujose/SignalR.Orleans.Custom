@@ -11,11 +11,9 @@ internal readonly record struct ConnectionGroupKey
     public static ConnectionGroupKey FromPrimaryGrainKey(string primaryGrainKey)
     {
         var parts = primaryGrainKey.Split(':', 3);
-        return new()
+        return new ConnectionGroupKey
         {
-            GroupType = Enum.Parse<ConnectionGroupType>(parts[0]),
-            HubType = parts[1],
-            GroupId = parts[2],
+            GroupType = Enum.Parse<ConnectionGroupType>(parts[0]), HubType = parts[1], GroupId = parts[2]
         };
     }
 }
